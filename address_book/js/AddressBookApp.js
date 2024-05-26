@@ -25,8 +25,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Contact_1 = require("./models/Contact");
 const readline = __importStar(require("readline"));
+const AddressBook_1 = require("./models/AddressBook");
 class AddressBookApp {
     constructor() {
+        this.addressBook = new AddressBook_1.AddressBook();
         this.input = readline.createInterface({
             input: process.stdin,
             output: process.stdout
@@ -42,6 +44,7 @@ class AddressBookApp {
                                 this.input.question('Phone Number: ', phoneNumber => {
                                     this.input.question('Email: ', email => {
                                         const contact = new Contact_1.Contact(firstName, lastName, address, city, state, zip, phoneNumber, email);
+                                        this.addressBook.addContact(contact);
                                         console.log('Contact added successfully.');
                                         this.listOrAdd();
                                     });
@@ -54,12 +57,13 @@ class AddressBookApp {
         });
     }
     listOrAdd() {
-        this.input.question(' To Add a new contact : type \'a\' \n To List all contacts : type \'l\' \n To exit type any character : \n Type Your Choice : ', answer => {
+        this.input.question(' To Add a new contact : type \'a\' \n To List all contacts : type \'l\' \n Type Your Choice : ', answer => {
             if (answer.toLowerCase() === 'a') {
                 this.addNewContact();
             }
             else if (answer.toLowerCase() === 'l') {
-                console.log(Contact_1.Contact);
+                this.addressBook.listContacts();
+                // console.log(Contact)
                 this.input.close();
             }
             else {

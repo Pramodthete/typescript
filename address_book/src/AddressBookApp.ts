@@ -1,10 +1,13 @@
 import { Contact } from './models/Contact';
 import * as readline from 'readline';
+import { AddressBook } from './models/AddressBook';
 
 class AddressBookApp {
   private input: readline.Interface;
+  private addressBook: AddressBook;
 
   constructor() {
+    this.addressBook = new AddressBook();
     this.input = readline.createInterface({
       input: process.stdin,
       output: process.stdout
@@ -30,6 +33,7 @@ class AddressBookApp {
                       phoneNumber,
                       email
                     );
+                    this.addressBook.addContact(contact);
                     console.log('Contact added successfully.');
                     this.listOrAdd();
                   });
@@ -43,10 +47,11 @@ class AddressBookApp {
   }
 
   private listOrAdd(): void {
-    this.input.question(' To Add a new contact : type \'a\' \n To List all contacts : type \'l\' \n To exit type any character : \n Type Your Choice : ', answer => {
+    this.input.question(' To Add a new contact : type \'a\' \n To List all contacts : type \'l\' \n Type Your Choice : ', answer => {
       if (answer.toLowerCase() === 'a') {
         this.addNewContact();
       } else if (answer.toLowerCase() === 'l') {
+        this.addressBook.listContacts();
         // console.log(Contact)
         this.input.close();
       } else {
