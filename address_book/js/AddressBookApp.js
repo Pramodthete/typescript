@@ -160,8 +160,45 @@ class AddressBookApp {
             });
         });
     }
+    viewPersonsByCityOrState() {
+        this.rl.question('Do you want to view persons by city(c) or state(s) ', searchBy => {
+            if (searchBy.toLowerCase() === 'c') {
+                this.rl.question('Enter the city: ', city => {
+                    const results = this.searchContactsByCity(city);
+                    this.displaySearchResults(results);
+                    this.listOrAddAddressBook();
+                });
+            }
+            else if (searchBy.toLowerCase() === 's') {
+                this.rl.question('Enter the state: ', state => {
+                    const results = this.searchContactsByState(state);
+                    this.displaySearchResults(results);
+                    this.listOrAddAddressBook();
+                });
+            }
+            else {
+                console.log('Invalid option.');
+                this.listOrAddAddressBook();
+            }
+        });
+    }
+    searchContactsByCity(city) {
+        console.log("------------->", city);
+        const results = [];
+        this.addressBooks.forEach(addressBook => {
+            results.push(...addressBook.getContactsByCity(city));
+        });
+        return results;
+    }
+    searchContactsByState(state) {
+        const results = [];
+        this.addressBooks.forEach(addressBook => {
+            results.push(...addressBook.getContactsByState(state));
+        });
+        return results;
+    }
     searchByCityOrState() {
-        this.rl.question('Do you want to search by (c)ity or (s)tate? ', searchBy => {
+        this.rl.question('Do you want to search by city (c) or state (s)? ', searchBy => {
             if (searchBy.toLowerCase() === 'c') {
                 this.rl.question('Enter the city to search for: ', city => {
                     const results = this.searchContacts(contact => contact.city.toLowerCase() === city.toLowerCase());
@@ -203,7 +240,7 @@ class AddressBookApp {
         }
     }
     listOrAddAddressBook() {
-        this.rl.question('To Create a new address book:cr, \nSelect an existing address book:sl, \nSearch By city or state:sr, \nQuit:q, \nType Your option: ', answer => {
+        this.rl.question('To Create a new address book:cr, \nSelect an existing address book:sl, \nSearch By city or state:sr, \nView by city or state:v, \nQuit:q, \nType Your option: ', answer => {
             if (answer.toLowerCase() === 'cr') {
                 this.addNewAddressBook();
             }
@@ -214,6 +251,9 @@ class AddressBookApp {
             }
             else if (answer.toLowerCase() === 'sr') {
                 this.searchByCityOrState();
+            }
+            else if (answer.toLowerCase() === 'v') {
+                this.viewPersonsByCityOrState();
             }
             else if (answer.toLowerCase() === 'q') {
                 this.rl.close();

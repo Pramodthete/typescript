@@ -3,21 +3,37 @@ import { Contact } from './Contact';
 
 export class AddressBook {
   private contacts: Set<Contact>;
+  private cityToContacts: Map<string, Set<Contact>>;
+  private stateToContacts: Map<string, Set<Contact>>;
 
   constructor() {
     this.contacts = new Set<Contact>();
+    this.cityToContacts = new Map<string, Set<Contact>>();
+    this.stateToContacts = new Map<string, Set<Contact>>();
   }
 
-  addContact(contact: Contact): boolean {
-    if (this.contacts.has(contact)) {
-      return false;
+  private addToCityAndStateMaps(contact: Contact): void {
+    if (!this.cityToContacts.has(contact.city)) {
+      this.cityToContacts.set(contact.city, new Set<Contact>());
     }
-    this.contacts.add(contact);
-    return true;
+    this.cityToContacts.get(contact.city)!.add(contact);
+
+    if (!this.stateToContacts.has(contact.state)) {
+      this.stateToContacts.set(contact.state, new Set<Contact>());
+    }
+    this.stateToContacts.get(contact.state)!.add(contact);
   }
 
-  getContacts(): Contact[] {
-    return Array.from(this.contacts);
+  private removeFromCityAndStateMaps(contact: Contact): void {
+    this.cityToContacts.get(contact.city)?.delete(contact);
+    if (this.cityToContacts.get(contact.city)?.size === 0) {
+      this.cityToContacts.delete(contact.city);
+    }
+
+    this.stateToContacts.get(contact.state)?.delete(contact);
+    if (this.stateToContacts.get(contact.state)?.size === 0) {
+      this.stateToContacts.delete(contact.state);
+    }
   }
 
   listContacts(): void {
@@ -26,19 +42,25 @@ export class AddressBook {
     });
   }
 
-  findContactByName(firstName: string, lastName: string): Contact | undefined {
-    for (let contact of this.contacts) {
-      if (contact.firstName.toLowerCase() === firstName.toLowerCase() && contact.lastName.toLowerCase() === lastName.toLowerCase()) {
-        return contact;
-      }
+  addContact(contact: Contact): boolean {
+    if (this.contacts.has(contact)) {
+      return false;
     }
-    return undefined;
+    this.contacts.add(contact);
+    this.addToCityAndStateMaps(contact);
+    return true;
   }
 
-  editContact(firstName: string,lastName: string,updatedDetails: Partial<Contact>): boolean {
+  editContact(
+    firstName: string,
+    lastName: string,
+    updatedDetails: Partial<Contact>
+  ): boolean {
     const contact = this.findContactByName(firstName, lastName);
     if (contact) {
+      this.removeFromCityAndStateMaps(contact);
       Object.assign(contact, updatedDetails);
+      this.addToCityAndStateMaps(contact);
       return true;
     }
     return false;
@@ -48,8 +70,27 @@ export class AddressBook {
     const contact = this.findContactByName(firstName, lastName);
     if (contact) {
       this.contacts.delete(contact);
+      this.removeFromCityAndStateMaps(contact);
       return true;
     }
     return false;
+  }
+
+  getContacts(): Contact[] {
+    return Array.from(this.contacts);
+  }
+
+  findContactByName(firstName: string, lastName: string): Contact | undefined {
+    return Array.from(this.contacts).find(
+      contact => contact.firstName === firstName && contact.lastName === lastName
+    );
+  }
+
+  getContactsByCity(city: string): Contact[] {
+    return Array.from(this.cityToContacts.get(city) || []);
+  }
+
+  getContactsByState(state: string): Contact[] {
+    return Array.from(this.stateToContacts.get(state) || []);
   }
 }
