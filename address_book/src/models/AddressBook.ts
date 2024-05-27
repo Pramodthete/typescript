@@ -93,4 +93,12 @@ export class AddressBook {
   getContactsByState(state: string): Contact[] {
     return Array.from(this.stateToContacts.get(state) || []);
   }
+
+  getCountByCity(city: string): number {
+    return this.cityToContacts.get(city)?.size || 0;
+  }
+
+  getCountByState(state: string): number {
+    return this.stateToContacts.get(state)?.size || 0;
+  }
 }

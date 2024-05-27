@@ -72,5 +72,13 @@ class AddressBook {
     getContactsByState(state) {
         return Array.from(this.stateToContacts.get(state) || []);
     }
+    getCountByCity(city) {
+        var _a;
+        return ((_a = this.cityToContacts.get(city)) === null || _a === void 0 ? void 0 : _a.size) || 0;
+    }
+    getCountByState(state) {
+        var _a;
+        return ((_a = this.stateToContacts.get(state)) === null || _a === void 0 ? void 0 : _a.size) || 0;
+    }
 }
 exports.AddressBook = AddressBook;

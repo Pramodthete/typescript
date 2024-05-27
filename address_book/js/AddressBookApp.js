@@ -239,8 +239,44 @@ class AddressBookApp {
             contacts.forEach(contact => console.log(contact.toString()));
         }
     }
+    viewCountsByCityOrState() {
+        this.rl.question('Do you want to view counts by (c)ity or (s)tate? ', countBy => {
+            if (countBy.toLowerCase() === 'c') {
+                this.rl.question('Enter the city: ', city => {
+                    const count = this.getCountByCity(city);
+                    console.log(`Number of contacts in ${city}: ${count}`);
+                    this.listOrAddAddressBook();
+                });
+            }
+            else if (countBy.toLowerCase() === 's') {
+                this.rl.question('Enter the state: ', state => {
+                    const count = this.getCountByState(state);
+                    console.log(`Number of contacts in ${state}: ${count}`);
+                    this.listOrAddAddressBook();
+                });
+            }
+            else {
+                console.log('Invalid option.');
+                this.listOrAddAddressBook();
+            }
+        });
+    }
+    getCountByCity(city) {
+        let count = 0;
+        this.addressBooks.forEach(addressBook => {
+            count += addressBook.getCountByCity(city);
+        });
+        return count;
+    }
+    getCountByState(state) {
+        let count = 0;
+        this.addressBooks.forEach(addressBook => {
+            count += addressBook.getCountByState(state);
+        });
+        return count;
+    }
     listOrAddAddressBook() {
-        this.rl.question('To Create a new address book:cr, \nSelect an existing address book:sl, \nSearch By city or state:sr, \nView by city or state:v, \nQuit:q, \nType Your option: ', answer => {
+        this.rl.question('To Create a new address book:cr, \nSelect an existing address book:sl, \nSearch By city or state:sr, \nView by city or state:v, \nView number of contacts by city or state:n, \nQuit:q, \nType Your option: ', answer => {
             if (answer.toLowerCase() === 'cr') {
                 this.addNewAddressBook();
             }
@@ -254,6 +290,9 @@ class AddressBookApp {
             }
             else if (answer.toLowerCase() === 'v') {
                 this.viewPersonsByCityOrState();
+            }
+            else if (answer.toLowerCase() === 'n') {
+                this.viewCountsByCityOrState();
             }
             else if (answer.toLowerCase() === 'q') {
                 this.rl.close();
