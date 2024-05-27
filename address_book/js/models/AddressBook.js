@@ -24,5 +24,13 @@ class AddressBook {
         }
         return false;
     }
+    deleteContact(firstName, lastName) {
+        const index = this.contacts.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
+        if (index !== -1) {
+            this.contacts.splice(index, 1);
+            return true;
+        }
+        return false;
+    }
 }
 exports.AddressBook = AddressBook;

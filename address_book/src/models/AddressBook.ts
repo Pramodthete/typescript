@@ -16,9 +16,10 @@ export class AddressBook {
 
   findContactByName(firstName: string, lastName: string): Contact | undefined {
     return this.contacts.find(
-      contact => contact.firstName === firstName && contact.lastName === lastName
+      contact => contact.firstName.toLocaleLowerCase() === firstName.toLocaleLowerCase() && contact.lastName.toLocaleLowerCase() === lastName.toLocaleLowerCase()
     );
   }
+
 
   editContact(
     firstName: string,
@@ -28,6 +29,17 @@ export class AddressBook {
     const contact = this.findContactByName(firstName, lastName);
     if (contact) {
       Object.assign(contact, updatedDetails);
+      return true;
+    }
+    return false;
+  }
+
+  deleteContact(firstName: string, lastName: string): boolean {
+    const index = this.contacts.findIndex(
+      contact => contact.firstName.toLocaleLowerCase() === firstName.toLocaleLowerCase() && contact.lastName.toLocaleLowerCase() === lastName.toLocaleLowerCase()
+    );
+    if (index !== -1) {
+      this.contacts.splice(index, 1);
       return true;
     }
     return false;

@@ -89,12 +89,28 @@ class AddressBookApp {
     });
   }
 
+  private deleteContact(): void {
+    this.rl.question('Enter the first name of the contact you want to delete: ', firstName => {
+      this.rl.question('Enter the last name of the contact you want to delete: ', lastName => {
+        const success = this.addressBook.deleteContact(firstName, lastName);
+        if (success) {
+          console.log('Contact deleted successfully.');
+        } else {
+          console.log('Contact not found.');
+        }
+        this.listOrAdd();
+      });
+    });
+  }
+
   private listOrAdd(): void {
-    this.rl.question('To add a new contact: a, \nedit an existing contact: e, \nlist all contacts: l \nType an option: ', answer => {
+    this.rl.question('To add a new contact: a, \nEdit an existing contact: e, \nList all contacts: l \nDelete contact by name: d \nType an option: ', answer => {
       if (answer.toLowerCase() === 'a') {
         this.addNewContact();
       } else if (answer.toLowerCase() === 'e') {
         this.editContact();
+      } else if (answer.toLowerCase() === 'd') {
+        this.deleteContact();
       } else if (answer.toLowerCase() === 'l') {
         this.addressBook.listContacts();
         this.rl.close();
