@@ -4,18 +4,42 @@ import { Contact } from './models/Contact';
 import * as readline from 'readline';
 
 class AddressBookApp {
-  private addressBook: AddressBook;
+  private addressBooks: Map<string, AddressBook>;
   private rl: readline.Interface;
 
   constructor() {
-    this.addressBook = new AddressBook();
+    this.addressBooks = new Map<string, AddressBook>();
     this.rl = readline.createInterface({
       input: process.stdin,
       output: process.stdout
     });
   }
 
-  private addNewContact(): void {
+  private addNewAddressBook(): void {
+    this.rl.question('Enter a unique name for the new address book: ', name => {
+      if (this.addressBooks.has(name)) {
+        console.log('An address book with this name already exists.');
+      } else {
+        this.addressBooks.set(name, new AddressBook());
+        console.log(`Address book '${name}' created successfully.`);
+      }
+      this.listOrAddAddressBook();
+    });
+  }
+
+  private selectAddressBook(callback: (addressBook: AddressBook) => void): void {
+    this.rl.question('Enter the name of the address book you want to select: ', name => {
+      const addressBook = this.addressBooks.get(name);
+      if (addressBook) {
+        callback(addressBook);
+      } else {
+        console.log('Address book not found.');
+        this.listOrAddAddressBook();
+      }
+    });
+  }
+
+  private addNewContact(addressBook: AddressBook): void {
     this.rl.question('First Name: ', firstName => {
       this.rl.question('Last Name: ', lastName => {
         this.rl.question('Address: ', address => {
@@ -34,16 +58,16 @@ class AddressBookApp {
                       phoneNumber,
                       email
                     );
-                    if (this.addressBook.addContact(contact)) {
+                    if (addressBook.addContact(contact)) {
                       console.log('Contact added successfully.');
                     } else {
                       console.log('Contact already exists.');
                     }
                     this.rl.question('Do you want to add another contact? (y/n): ', answer => {
                       if (answer.toLowerCase() === 'y') {
-                        this.addNewContact();
+                        this.addNewContact(addressBook);
                       } else {
-                        this.listOrAdd();
+                        this.listOrAddAddressBook();
                       }
                     });
                   });
@@ -56,13 +80,13 @@ class AddressBookApp {
     });
   }
 
-  private editContact(): void {
+  private editContact(addressBook: AddressBook): void {
     this.rl.question('Enter the first name of the contact you want to edit: ', firstName => {
       this.rl.question('Enter the last name of the contact you want to edit: ', lastName => {
-        const contact = this.addressBook.findContactByName(firstName, lastName);
+        const contact = addressBook.findContactByName(firstName, lastName);
         if (!contact) {
           console.log('Contact not found.');
-          this.listOrAdd();
+          this.listOrAddAddressBook();
           return;
         }
 
@@ -81,13 +105,13 @@ class AddressBookApp {
                     if (phoneNumber) updatedDetails.phoneNumber = phoneNumber;
                     if (email) updatedDetails.email = email;
 
-                    const success = this.addressBook.editContact(firstName, lastName, updatedDetails);
+                    const success = addressBook.editContact(firstName, lastName, updatedDetails);
                     if (success) {
                       console.log('Contact updated successfully.');
                     } else {
                       console.log('Failed to update contact.');
                     }
-                    this.listOrAdd();
+                    this.listOrAddAddressBook();
                   });
                 });
               });
@@ -98,40 +122,59 @@ class AddressBookApp {
     });
   }
 
-  private deleteContact(): void {
+  private deleteContact(addressBook: AddressBook): void {
     this.rl.question('Enter the first name of the contact you want to delete: ', firstName => {
       this.rl.question('Enter the last name of the contact you want to delete: ', lastName => {
-        const success = this.addressBook.deleteContact(firstName, lastName);
+        const success = addressBook.deleteContact(firstName, lastName);
         if (success) {
           console.log('Contact deleted successfully.');
         } else {
           console.log('Contact not found.');
         }
-        this.listOrAdd();
+        this.listOrAddAddressBook();
       });
     });
   }
 
-  private listOrAdd(): void {
-    this.rl.question('To add a new contact: a, \nEdit an existing contact: e, \nList all contacts: l \nDelete contact by name: d \nType an option: ', answer => {
-      if (answer.toLowerCase() === 'a') {
-        this.addNewContact();
-      } else if (answer.toLowerCase() === 'e') {
-        this.editContact();
-      } else if (answer.toLowerCase() === 'd') {
-        this.deleteContact();
-      } else if (answer.toLowerCase() === 'l') {
-        this.addressBook.listContacts();
+  private listOrAddAddressBook(): void {
+    this.rl.question('To Create a new address book:c, \nSelect an existing address book:s, \nQuit:q, \nType Your option: ', answer => {
+      if (answer.toLowerCase() === 'c') {
+        this.addNewAddressBook();
+      } else if (answer.toLowerCase() === 's') {
+        this.selectAddressBook(addressBook => {
+          this.listOrAdd(addressBook);
+        });
+      } else if (answer.toLowerCase() === 'q') {
         this.rl.close();
       } else {
         console.log('Invalid option.');
-        this.listOrAdd();
+        this.listOrAddAddressBook();
+      }
+    });
+  }
+
+  private listOrAdd(addressBook: AddressBook): void {
+    this.rl.question('To add a new contact:a, \nEdit an existing contact:e, \nDelete a contact:d, \nList all contacts:l, \nBack to address book menu:b \nType Your option: ', answer => {
+      if (answer.toLowerCase() === 'a') {
+        this.addNewContact(addressBook);
+      } else if (answer.toLowerCase() === 'e') {
+        this.editContact(addressBook);
+      } else if (answer.toLowerCase() === 'd') {
+        this.deleteContact(addressBook);
+      } else if (answer.toLowerCase() === 'l') {
+        addressBook.listContacts();
+        this.listOrAdd(addressBook);
+      } else if (answer.toLowerCase() === 'b') {
+        this.listOrAddAddressBook();
+      } else {
+        console.log('Invalid option.');
+        this.listOrAdd(addressBook);
       }
     });
   }
 
   public start(): void {
-    this.listOrAdd();
+    this.listOrAddAddressBook();
   }
 }
 

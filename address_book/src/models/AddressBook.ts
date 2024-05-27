@@ -1,4 +1,4 @@
-// src/models/AddressBook.ts
+
 import { Contact } from './Contact';
 
 export class AddressBook {
@@ -31,11 +31,7 @@ export class AddressBook {
     return undefined;
   }
 
-  editContact(
-    firstName: string,
-    lastName: string,
-    updatedDetails: Partial<Contact>
-  ): boolean {
+  editContact(firstName: string,lastName: string,updatedDetails: Partial<Contact>): boolean {
     const contact = this.findContactByName(firstName, lastName);
     if (contact) {
       Object.assign(contact, updatedDetails);
