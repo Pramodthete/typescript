@@ -144,14 +144,59 @@ class AddressBookApp {
     });
   }
 
+
+  private searchByCityOrState(): void {
+    this.rl.question('Do you want to search by (c)ity or (s)tate? ', searchBy => {
+      if (searchBy.toLowerCase() === 'c') {
+        this.rl.question('Enter the city to search for: ', city => {
+          const results = this.searchContacts(contact => contact.city.toLowerCase() === city.toLowerCase());
+          this.displaySearchResults(results);
+          this.listOrAddAddressBook();
+        });
+      } else if (searchBy.toLowerCase() === 's') {
+        this.rl.question('Enter the state to search for: ', state => {
+          const results = this.searchContacts(contact => contact.state.toLowerCase() === state.toLowerCase());
+          this.displaySearchResults(results);
+          this.listOrAddAddressBook();
+        });
+      } else {
+        console.log('Invalid option.');
+        this.listOrAddAddressBook();
+      }
+    });
+  }
+
+  private searchContacts(predicate: (contact: Contact) => boolean): Contact[] {
+    const results: Contact[] = [];
+    this.addressBooks.forEach(addressBook => {
+      addressBook.getContacts().forEach(contact => {
+        if (predicate(contact)) {
+          results.push(contact);
+        }
+      });
+    });
+    return results;
+  }
+
+  private displaySearchResults(contacts: Contact[]): void {
+    if (contacts.length === 0) {
+      console.log('No contacts found.');
+    } else {
+      console.log('Search results:');
+      contacts.forEach(contact => console.log(contact.toString()));
+    }
+  }
+
   private listOrAddAddressBook(): void {
-    this.rl.question('To Create a new address book:c, \nSelect an existing address book:s, \nQuit:q, \nType Your option: ', answer => {
-      if (answer.toLowerCase() === 'c') {
+    this.rl.question('To Create a new address book:cr, \nSelect an existing address book:sl, \nSearch By city or state:sr, \nQuit:q, \nType Your option: ', answer => {
+      if (answer.toLowerCase() === 'cr') {
         this.addNewAddressBook();
-      } else if (answer.toLowerCase() === 's') {
+      } else if (answer.toLowerCase() === 'sl') {
         this.selectAddressBook(addressBook => {
           this.listOrAdd(addressBook);
         });
+      } else if (answer.toLowerCase() === 'sr') {
+        this.searchByCityOrState();
       } else if (answer.toLowerCase() === 'q') {
         this.rl.close();
       } else {

@@ -12,6 +12,9 @@ class AddressBook {
         this.contacts.add(contact);
         return true;
     }
+    getContacts() {
+        return Array.from(this.contacts);
+    }
     listContacts() {
         this.contacts.forEach(contact => {
             console.log(contact.toString());

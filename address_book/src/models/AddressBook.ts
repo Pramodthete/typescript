@@ -16,6 +16,10 @@ export class AddressBook {
     return true;
   }
 
+  getContacts(): Contact[] {
+    return Array.from(this.contacts);
+  }
+
   listContacts(): void {
     this.contacts.forEach(contact => {
       console.log(contact.toString());
