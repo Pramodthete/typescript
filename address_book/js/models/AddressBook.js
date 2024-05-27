@@ -13,5 +13,16 @@ class AddressBook {
             console.log(contact.toString());
         });
     }
+    findContactByName(firstName, lastName) {
+        return this.contacts.find(contact => contact.firstName === firstName && contact.lastName === lastName);
+    }
+    editContact(firstName, lastName, updatedDetails) {
+        const contact = this.findContactByName(firstName, lastName);
+        if (contact) {
+            Object.assign(contact, updatedDetails);
+            return true;
+        }
+        return false;
+    }
 }
 exports.AddressBook = AddressBook;
