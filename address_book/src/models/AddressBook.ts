@@ -24,7 +24,7 @@ export class AddressBook {
 
   findContactByName(firstName: string, lastName: string): Contact | undefined {
     for (let contact of this.contacts) {
-      if (contact.firstName === firstName && contact.lastName === lastName) {
+      if (contact.firstName.toLowerCase() === firstName.toLowerCase() && contact.lastName.toLowerCase() === lastName.toLowerCase()) {
         return contact;
       }
     }

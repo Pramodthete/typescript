@@ -42,40 +42,48 @@ class AddressBookApp {
   private addNewContact(addressBook: AddressBook): void {
     this.rl.question('First Name: ', firstName => {
       this.rl.question('Last Name: ', lastName => {
-        this.rl.question('Address: ', address => {
-          this.rl.question('City: ', city => {
-            this.rl.question('State: ', state => {
-              this.rl.question('ZIP: ', zip => {
-                this.rl.question('Phone Number: ', phoneNumber => {
-                  this.rl.question('Email: ', email => {
-                    const contact = new Contact(
-                      firstName,
-                      lastName,
-                      address,
-                      city,
-                      state,
-                      zip,
-                      phoneNumber,
-                      email
-                    );
-                    if (addressBook.addContact(contact)) {
+        if (addressBook.findContactByName(firstName, lastName)) {
+          console.log('A contact with this name already exists.');
+          this.rl.question('Do you want to add another contact? (y/n): ', answer => {
+            if (answer.toLowerCase() === 'y') {
+              this.addNewContact(addressBook);
+            } else {
+              this.listOrAddAddressBook();
+            }
+          });
+        } else {
+          this.rl.question('Address: ', address => {
+            this.rl.question('City: ', city => {
+              this.rl.question('State: ', state => {
+                this.rl.question('ZIP: ', zip => {
+                  this.rl.question('Phone Number: ', phoneNumber => {
+                    this.rl.question('Email: ', email => {
+                      const contact = new Contact(
+                        firstName,
+                        lastName,
+                        address,
+                        city,
+                        state,
+                        zip,
+                        phoneNumber,
+                        email
+                      );
+                      addressBook.addContact(contact);
                       console.log('Contact added successfully.');
-                    } else {
-                      console.log('Contact already exists.');
-                    }
-                    this.rl.question('Do you want to add another contact? (y/n): ', answer => {
-                      if (answer.toLowerCase() === 'y') {
-                        this.addNewContact(addressBook);
-                      } else {
-                        this.listOrAddAddressBook();
-                      }
+                      this.rl.question('Do you want to add another contact? (y/n): ', answer => {
+                        if (answer.toLowerCase() === 'y') {
+                          this.addNewContact(addressBook);
+                        } else {
+                          this.listOrAddAddressBook();
+                        }
+                      });
                     });
                   });
                 });
               });
             });
           });
-        });
+        }
       });
     });
   }
