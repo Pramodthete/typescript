@@ -14,5 +14,8 @@ export class Contact {
     toString(): string {
       return `${this.firstName} ${this.lastName}, ${this.address}, ${this.city}, ${this.state}, ${this.zip}, ${this.phoneNumber}, ${this.email}`;
     }
+    equals(other: Contact): boolean {
+      return this.firstName === other.firstName && this.lastName === other.lastName;
+    }
   }
   

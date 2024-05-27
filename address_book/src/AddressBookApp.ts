@@ -34,9 +34,18 @@ class AddressBookApp {
                       phoneNumber,
                       email
                     );
-                    this.addressBook.addContact(contact);
-                    console.log('Contact added successfully.');
-                    this.listOrAdd();
+                    if (this.addressBook.addContact(contact)) {
+                      console.log('Contact added successfully.');
+                    } else {
+                      console.log('Contact already exists.');
+                    }
+                    this.rl.question('Do you want to add another contact? (y/n): ', answer => {
+                      if (answer.toLowerCase() === 'y') {
+                        this.addNewContact();
+                      } else {
+                        this.listOrAdd();
+                      }
+                    });
                   });
                 });
               });

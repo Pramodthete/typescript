@@ -44,9 +44,20 @@ class AddressBookApp {
                                 this.rl.question('Phone Number: ', phoneNumber => {
                                     this.rl.question('Email: ', email => {
                                         const contact = new Contact_1.Contact(firstName, lastName, address, city, state, zip, phoneNumber, email);
-                                        this.addressBook.addContact(contact);
-                                        console.log('Contact added successfully.');
-                                        this.listOrAdd();
+                                        if (this.addressBook.addContact(contact)) {
+                                            console.log('Contact added successfully.');
+                                        }
+                                        else {
+                                            console.log('Contact already exists.');
+                                        }
+                                        this.rl.question('Do you want to add another contact? (y/n): ', answer => {
+                                            if (answer.toLowerCase() === 'y') {
+                                                this.addNewContact();
+                                            }
+                                            else {
+                                                this.listOrAdd();
+                                            }
+                                        });
                                     });
                                 });
                             });

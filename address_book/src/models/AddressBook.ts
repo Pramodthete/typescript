@@ -1,11 +1,19 @@
-
+// src/models/AddressBook.ts
 import { Contact } from './Contact';
 
 export class AddressBook {
-  private contacts: Contact[] = [];
+  private contacts: Set<Contact>;
 
-  addContact(contact: Contact): void {
-    this.contacts.push(contact);
+  constructor() {
+    this.contacts = new Set<Contact>();
+  }
+
+  addContact(contact: Contact): boolean {
+    if (this.contacts.has(contact)) {
+      return false;
+    }
+    this.contacts.add(contact);
+    return true;
   }
 
   listContacts(): void {
@@ -15,11 +23,13 @@ export class AddressBook {
   }
 
   findContactByName(firstName: string, lastName: string): Contact | undefined {
-    return this.contacts.find(
-      contact => contact.firstName.toLocaleLowerCase() === firstName.toLocaleLowerCase() && contact.lastName.toLocaleLowerCase() === lastName.toLocaleLowerCase()
-    );
+    for (let contact of this.contacts) {
+      if (contact.firstName === firstName && contact.lastName === lastName) {
+        return contact;
+      }
+    }
+    return undefined;
   }
-
 
   editContact(
     firstName: string,
@@ -35,11 +45,9 @@ export class AddressBook {
   }
 
   deleteContact(firstName: string, lastName: string): boolean {
-    const index = this.contacts.findIndex(
-      contact => contact.firstName.toLocaleLowerCase() === firstName.toLocaleLowerCase() && contact.lastName.toLocaleLowerCase() === lastName.toLocaleLowerCase()
-    );
-    if (index !== -1) {
-      this.contacts.splice(index, 1);
+    const contact = this.findContactByName(firstName, lastName);
+    if (contact) {
+      this.contacts.delete(contact);
       return true;
     }
     return false;

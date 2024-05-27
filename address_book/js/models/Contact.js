@@ -15,5 +15,8 @@ class Contact {
     toString() {
         return `${this.firstName} ${this.lastName}, ${this.address}, ${this.city}, ${this.state}, ${this.zip}, ${this.phoneNumber}, ${this.email}`;
     }
+    equals(other) {
+        return this.firstName === other.firstName && this.lastName === other.lastName;
+    }
 }
 exports.Contact = Contact;

@@ -3,10 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AddressBook = void 0;
 class AddressBook {
     constructor() {
-        this.contacts = [];
+        this.contacts = new Set();
     }
     addContact(contact) {
-        this.contacts.push(contact);
+        if (this.contacts.has(contact)) {
+            return false;
+        }
+        this.contacts.add(contact);
+        return true;
     }
     listContacts() {
         this.contacts.forEach(contact => {
@@ -14,7 +18,12 @@ class AddressBook {
         });
     }
     findContactByName(firstName, lastName) {
-        return this.contacts.find(contact => contact.firstName === firstName && contact.lastName === lastName);
+        for (let contact of this.contacts) {
+            if (contact.firstName === firstName && contact.lastName === lastName) {
+                return contact;
+            }
+        }
+        return undefined;
     }
     editContact(firstName, lastName, updatedDetails) {
         const contact = this.findContactByName(firstName, lastName);
@@ -25,9 +34,9 @@ class AddressBook {
         return false;
     }
     deleteContact(firstName, lastName) {
-        const index = this.contacts.findIndex(contact => contact.firstName === firstName && contact.lastName === lastName);
-        if (index !== -1) {
-            this.contacts.splice(index, 1);
+        const contact = this.findContactByName(firstName, lastName);
+        if (contact) {
+            this.contacts.delete(contact);
             return true;
         }
         return false;
