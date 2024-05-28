@@ -93,5 +93,20 @@ class AddressBook {
             return 0;
         });
     }
+    sortContactsByCity() {
+        return Array.from(this.contacts).sort((a, b) => {
+            return a.city.localeCompare(b.city);
+        });
+    }
+    sortContactsByState() {
+        return Array.from(this.contacts).sort((a, b) => {
+            return a.state.localeCompare(b.state);
+        });
+    }
+    sortContactsByZip() {
+        return Array.from(this.contacts).sort((a, b) => {
+            return a.zip.localeCompare(b.zip);
+        });
+    }
 }
 exports.AddressBook = AddressBook;
