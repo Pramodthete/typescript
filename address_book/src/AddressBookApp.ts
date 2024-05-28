@@ -1,4 +1,4 @@
-
+import fs from 'fs';
 import { AddressBook } from './models/AddressBook';
 import { Contact } from './models/Contact';
 import * as readline from 'readline';
@@ -267,7 +267,7 @@ class AddressBookApp {
   }
 
   private listOrAddAddressBook(): void {
-    this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nSort the persons (by City: sc, State: ss, ZIP: sz): s, \nView number of contacts by city or state: n, \nQuit: q, \nType Your option: ', answer => {
+    this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nSort the persons (by City: sc, State: ss, ZIP: sz): s, \nView number of contacts by city or state: n, \nQuit: q, \nWrite into file: w, \nRead From File: r, \nType Your option: ', answer => {
       if (answer.toLowerCase() === 'cr') {
         this.addNewAddressBook();
       } else if (answer.toLowerCase() === 'sl') {
@@ -280,6 +280,23 @@ class AddressBookApp {
         this.viewPersonsByCityOrState();
       } else if (answer.toLowerCase() === 'n') {
         this.viewCountsByCityOrState();
+      }else if (answer.toLowerCase() === 'w') {
+        this.rl.question('Enter the name of the address book to write: ', name => {
+          const addressBook = this.addressBooks.get(name);
+          if (addressBook) {
+            console.log("Data Write Into File --------->>>");
+            this.writeToFile('addressBook.txt', JSON.stringify(addressBook.getContacts()));
+            this.listOrAddAddressBook();
+          } else {
+            console.log('Address book not found.');
+          }
+          this.listOrAddAddressBook();
+        });
+      } else if (answer.toLowerCase() === 'r') {
+        const readData=this.readFromFile('addressBook.txt');
+        console.log("Data Read From File --------->>>");
+        console.log(JSON.parse(readData));
+        this.listOrAddAddressBook();  
       } else if (answer.toLowerCase() === 's') {
         this.rl.question('Enter sorting criteria (c for City, s for State, z for ZIP): ', criteria => {
           if (criteria.toLowerCase() === 'c') {
@@ -359,6 +376,25 @@ class AddressBookApp {
         console.log('Address book not found.');
       }
     });
+  }
+
+  public writeToFile(filePath: string, data: string): void {
+    try {
+      const jsonData = JSON.stringify(data, null, 2);
+      fs.writeFileSync(filePath, jsonData, 'utf-8');
+      console.log('Data has been written to the file successfully.');
+    } catch (error) {
+      console.error('Error writing to file:', error);
+    }
+  }
+
+  public readFromFile(filePath: string): string {
+    try {
+      return fs.readFileSync(filePath, 'utf-8');
+    } catch (error) {
+      console.error('Error reading file:', error);
+      return '';
+    }
   }
   
 

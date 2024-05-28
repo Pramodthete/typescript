@@ -22,7 +22,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const fs_1 = __importDefault(require("fs"));
 const AddressBook_1 = require("./models/AddressBook");
 const Contact_1 = require("./models/Contact");
 const readline = __importStar(require("readline"));
@@ -279,7 +283,7 @@ class AddressBookApp {
         contacts.forEach(contact => console.log(contact.toString()));
     }
     listOrAddAddressBook() {
-        this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nSort the persons (by City: sc, State: ss, ZIP: sz): s, \nView number of contacts by city or state: n, \nQuit: q, \nType Your option: ', answer => {
+        this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nSort the persons (by City: sc, State: ss, ZIP: sz): s, \nView number of contacts by city or state: n, \nQuit: q, \nWrite into file: w, \nRead From File: r, \nType Your option: ', answer => {
             if (answer.toLowerCase() === 'cr') {
                 this.addNewAddressBook();
             }
@@ -296,6 +300,26 @@ class AddressBookApp {
             }
             else if (answer.toLowerCase() === 'n') {
                 this.viewCountsByCityOrState();
+            }
+            else if (answer.toLowerCase() === 'w') {
+                this.rl.question('Enter the name of the address book to write: ', name => {
+                    const addressBook = this.addressBooks.get(name);
+                    if (addressBook) {
+                        console.log("Data Write Into File --------->>>");
+                        this.writeToFile('addressBook.txt', JSON.stringify(addressBook.getContacts()));
+                        this.listOrAddAddressBook();
+                    }
+                    else {
+                        console.log('Address book not found.');
+                    }
+                    this.listOrAddAddressBook();
+                });
+            }
+            else if (answer.toLowerCase() === 'r') {
+                const readData = this.readFromFile('addressBook.txt');
+                console.log("Data Read From File --------->>>");
+                console.log(JSON.parse(readData));
+                this.listOrAddAddressBook();
             }
             else if (answer.toLowerCase() === 's') {
                 this.rl.question('Enter sorting criteria (c for City, s for State, z for ZIP): ', criteria => {
@@ -385,6 +409,25 @@ class AddressBookApp {
                 console.log('Address book not found.');
             }
         });
+    }
+    writeToFile(filePath, data) {
+        try {
+            const jsonData = JSON.stringify(data, null, 2);
+            fs_1.default.writeFileSync(filePath, jsonData, 'utf-8');
+            console.log('Data has been written to the file successfully.');
+        }
+        catch (error) {
+            console.error('Error writing to file:', error);
+        }
+    }
+    readFromFile(filePath) {
+        try {
+            return fs_1.default.readFileSync(filePath, 'utf-8');
+        }
+        catch (error) {
+            console.error('Error reading file:', error);
+            return '';
+        }
     }
     start() {
         this.listOrAddAddressBook();
