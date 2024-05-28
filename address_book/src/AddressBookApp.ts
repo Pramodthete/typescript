@@ -262,14 +262,12 @@ class AddressBookApp {
     return count;
   }
 
-  private sortAndDisplayContacts(addressBook: AddressBook): void {
-    const sortedContacts = addressBook.sortContactsByName();
-    console.log('Sorted contacts:');
-    sortedContacts.forEach(contact => console.log(contact.toString()));
+  private displayContacts(contacts: Contact[]): void {
+    contacts.forEach(contact => console.log(contact.toString()));
   }
 
   private listOrAddAddressBook(): void {
-    this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nSort the persons: a, \nView number of contacts by city or state: n, \nQuit: q, \nType Your option: ', answer => {
+    this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nSort the persons (by City: sc, State: ss, ZIP: sz): s, \nView number of contacts by city or state: n, \nQuit: q, \nType Your option: ', answer => {
       if (answer.toLowerCase() === 'cr') {
         this.addNewAddressBook();
       } else if (answer.toLowerCase() === 'sl') {
@@ -278,21 +276,24 @@ class AddressBookApp {
         });
       } else if (answer.toLowerCase() === 'sr') {
         this.searchByCityOrState();
-      }else if (answer.toLowerCase() === 'v') {
+      } else if (answer.toLowerCase() === 'v') {
         this.viewPersonsByCityOrState();
       } else if (answer.toLowerCase() === 'n') {
         this.viewCountsByCityOrState();
-      }else if (answer.toLowerCase() === 'a') {
-        this.rl.question('Enter the name of the address book to sort: ', name => {
-          const addressBook = this.addressBooks.get(name);
-          if (addressBook) {
-            this.sortAndDisplayContacts(addressBook);
+      } else if (answer.toLowerCase() === 's') {
+        this.rl.question('Enter sorting criteria (c for City, s for State, z for ZIP): ', criteria => {
+          if (criteria.toLowerCase() === 'c') {
+            this.sortAndDisplayContactsByCity();
+          } else if (criteria.toLowerCase() === 's') {
+            this.sortAndDisplayContactsByState();
+          } else if (criteria.toLowerCase() === 'z') {
+            this.sortAndDisplayContactsByZIP();
           } else {
-            console.log('Address book not found.');
+            console.log('Invalid sorting criteria.');
           }
           this.listOrAddAddressBook();
         });
-      }else if (answer.toLowerCase() === 'q') {
+      } else if (answer.toLowerCase() === 'q') {
         this.rl.close();
       } else {
         console.log('Invalid option.');
@@ -300,7 +301,7 @@ class AddressBookApp {
       }
     });
   }
-
+  
   private listOrAdd(addressBook: AddressBook): void {
     this.rl.question('To add a new contact: a, \nEdit an existing contact: e, \nDelete a contact: d, \nList all contacts: l, \nBack to address book menu: b \nType Your option: ', answer => {
       if (answer.toLowerCase() === 'a') {
@@ -320,6 +321,46 @@ class AddressBookApp {
       }
     });
   }
+  
+  private sortAndDisplayContactsByCity(): void {
+    this.rl.question('Enter the name of the address book to sort: ', name => {
+      const addressBook = this.addressBooks.get(name);
+      if (addressBook) {
+        const sortedContacts = addressBook.sortContactsByCity();
+        this.displayContacts(sortedContacts);
+        this.listOrAddAddressBook();
+      } else {
+        console.log('Address book not found.');
+      }
+    });
+  }
+  
+  private sortAndDisplayContactsByState(): void {
+    this.rl.question('Enter the name of the address book to sort: ', name => {
+      const addressBook = this.addressBooks.get(name);
+      if (addressBook) {
+        const sortedContacts = addressBook.sortContactsByState();
+        this.displayContacts(sortedContacts);
+        this.listOrAddAddressBook();
+      } else {
+        console.log('Address book not found.');
+      }
+    });
+  }
+  
+  private sortAndDisplayContactsByZIP(): void {
+    this.rl.question('Enter the name of the address book to sort: ', name => {
+      const addressBook = this.addressBooks.get(name);
+      if (addressBook) {
+        const sortedContacts = addressBook.sortContactsByZip();
+        this.displayContacts(sortedContacts);
+        this.listOrAddAddressBook();
+      } else {
+        console.log('Address book not found.');
+      }
+    });
+  }
+  
 
   public start(): void {
     this.listOrAddAddressBook();

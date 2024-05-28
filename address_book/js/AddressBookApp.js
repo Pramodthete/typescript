@@ -275,13 +275,11 @@ class AddressBookApp {
         });
         return count;
     }
-    sortAndDisplayContacts(addressBook) {
-        const sortedContacts = addressBook.sortContactsByName();
-        console.log('Sorted contacts:');
-        sortedContacts.forEach(contact => console.log(contact.toString()));
+    displayContacts(contacts) {
+        contacts.forEach(contact => console.log(contact.toString()));
     }
     listOrAddAddressBook() {
-        this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nView number of contacts by city or state: n, \nQuit: q, \nType Your option: ', answer => {
+        this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nSort the persons (by City: sc, State: ss, ZIP: sz): s, \nView number of contacts by city or state: n, \nQuit: q, \nType Your option: ', answer => {
             if (answer.toLowerCase() === 'cr') {
                 this.addNewAddressBook();
             }
@@ -299,14 +297,19 @@ class AddressBookApp {
             else if (answer.toLowerCase() === 'n') {
                 this.viewCountsByCityOrState();
             }
-            else if (answer.toLowerCase() === 'a') {
-                this.rl.question('Enter the name of the address book to sort: ', name => {
-                    const addressBook = this.addressBooks.get(name);
-                    if (addressBook) {
-                        this.sortAndDisplayContacts(addressBook);
+            else if (answer.toLowerCase() === 's') {
+                this.rl.question('Enter sorting criteria (c for City, s for State, z for ZIP): ', criteria => {
+                    if (criteria.toLowerCase() === 'c') {
+                        this.sortAndDisplayContactsByCity();
+                    }
+                    else if (criteria.toLowerCase() === 's') {
+                        this.sortAndDisplayContactsByState();
+                    }
+                    else if (criteria.toLowerCase() === 'z') {
+                        this.sortAndDisplayContactsByZIP();
                     }
                     else {
-                        console.log('Address book not found.');
+                        console.log('Invalid sorting criteria.');
                     }
                     this.listOrAddAddressBook();
                 });
@@ -341,6 +344,45 @@ class AddressBookApp {
             else {
                 console.log('Invalid option.');
                 this.listOrAdd(addressBook);
+            }
+        });
+    }
+    sortAndDisplayContactsByCity() {
+        this.rl.question('Enter the name of the address book to sort: ', name => {
+            const addressBook = this.addressBooks.get(name);
+            if (addressBook) {
+                const sortedContacts = addressBook.sortContactsByCity();
+                this.displayContacts(sortedContacts);
+                this.listOrAddAddressBook();
+            }
+            else {
+                console.log('Address book not found.');
+            }
+        });
+    }
+    sortAndDisplayContactsByState() {
+        this.rl.question('Enter the name of the address book to sort: ', name => {
+            const addressBook = this.addressBooks.get(name);
+            if (addressBook) {
+                const sortedContacts = addressBook.sortContactsByState();
+                this.displayContacts(sortedContacts);
+                this.listOrAddAddressBook();
+            }
+            else {
+                console.log('Address book not found.');
+            }
+        });
+    }
+    sortAndDisplayContactsByZIP() {
+        this.rl.question('Enter the name of the address book to sort: ', name => {
+            const addressBook = this.addressBooks.get(name);
+            if (addressBook) {
+                const sortedContacts = addressBook.sortContactsByZip();
+                this.displayContacts(sortedContacts);
+                this.listOrAddAddressBook();
+            }
+            else {
+                console.log('Address book not found.');
             }
         });
     }
