@@ -240,7 +240,7 @@ class AddressBookApp {
         }
     }
     viewCountsByCityOrState() {
-        this.rl.question('Do you want to view counts by (c)ity or (s)tate? ', countBy => {
+        this.rl.question('Do you want to view counts by city (c) or state (s) ', countBy => {
             if (countBy.toLowerCase() === 'c') {
                 this.rl.question('Enter the city: ', city => {
                     const count = this.getCountByCity(city);
@@ -275,8 +275,13 @@ class AddressBookApp {
         });
         return count;
     }
+    sortAndDisplayContacts(addressBook) {
+        const sortedContacts = addressBook.sortContactsByName();
+        console.log('Sorted contacts:');
+        sortedContacts.forEach(contact => console.log(contact.toString()));
+    }
     listOrAddAddressBook() {
-        this.rl.question('To Create a new address book:cr, \nSelect an existing address book:sl, \nSearch By city or state:sr, \nView by city or state:v, \nView number of contacts by city or state:n, \nQuit:q, \nType Your option: ', answer => {
+        this.rl.question('To Create a new address book: cr, \nSelect an existing address book: sl, \nSearch By city or state: sr, \nView by city or state: v, \nView number of contacts by city or state: n, \nQuit: q, \nType Your option: ', answer => {
             if (answer.toLowerCase() === 'cr') {
                 this.addNewAddressBook();
             }
@@ -294,6 +299,18 @@ class AddressBookApp {
             else if (answer.toLowerCase() === 'n') {
                 this.viewCountsByCityOrState();
             }
+            else if (answer.toLowerCase() === 'a') {
+                this.rl.question('Enter the name of the address book to sort: ', name => {
+                    const addressBook = this.addressBooks.get(name);
+                    if (addressBook) {
+                        this.sortAndDisplayContacts(addressBook);
+                    }
+                    else {
+                        console.log('Address book not found.');
+                    }
+                    this.listOrAddAddressBook();
+                });
+            }
             else if (answer.toLowerCase() === 'q') {
                 this.rl.close();
             }
@@ -304,7 +321,7 @@ class AddressBookApp {
         });
     }
     listOrAdd(addressBook) {
-        this.rl.question('To add a new contact:a, \nEdit an existing contact:e, \nDelete a contact:d, \nList all contacts:l, \nBack to address book menu:b \nType Your option: ', answer => {
+        this.rl.question('To add a new contact: a, \nEdit an existing contact: e, \nDelete a contact: d, \nList all contacts: l, \nBack to address book menu: b \nType Your option: ', answer => {
             if (answer.toLowerCase() === 'a') {
                 this.addNewContact(addressBook);
             }

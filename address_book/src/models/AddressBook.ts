@@ -101,4 +101,18 @@ export class AddressBook {
   getCountByState(state: string): number {
     return this.stateToContacts.get(state)?.size || 0;
   }
+
+  sortContactsByName(): Contact[] {
+    return Array.from(this.contacts).sort((a, b) => {
+      const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+      const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+  }
 }

@@ -80,5 +80,18 @@ class AddressBook {
         var _a;
         return ((_a = this.stateToContacts.get(state)) === null || _a === void 0 ? void 0 : _a.size) || 0;
     }
+    sortContactsByName() {
+        return Array.from(this.contacts).sort((a, b) => {
+            const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
+            const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
+            if (nameA < nameB) {
+                return -1;
+            }
+            if (nameA > nameB) {
+                return 1;
+            }
+            return 0;
+        });
+    }
 }
 exports.AddressBook = AddressBook;
